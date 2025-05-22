@@ -75,7 +75,9 @@ const Car = () => {
                     <div>{item.fecha}</div>
                     <div>{item.hora}</div>
                     <div>{item.razon}</div>
-                    
+                    <div>{item.estatus}</div>
+                    <div>{item.trabajo}</div>
+
                     {/* Boton que redireccione a Revision.jsx */}
                     <button onClick={()=>{navigate("/revision", { state: {item} })}}>Editar</button>
                   </li>

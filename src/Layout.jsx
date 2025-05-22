@@ -6,7 +6,7 @@ import UnderInspection from './views/UnderInspection.jsx'
 import injectContext from './js/store/appContext.js'
 import Revision from './views/Revision.jsx'
 import AddCar from './views/AddCar.jsx'
-import Revision from './views/Revision.jsx'
+
 
 
 export const Layout = () => {

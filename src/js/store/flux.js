@@ -34,8 +34,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 				
 				
 			},
-			editRevision: (placa, fecha, hora)=>{
-				
+			editRevision: (rev)=>{
+				const store = getStore()
+				const revisionesActualizadas = store.revisiones.map(revision => {
+				if (
+					revision.placa === rev.placa &&
+					revision.fecha === rev.fecha &&
+					revision.hora === rev.hora
+				) {
+					// Retorna una nueva revisión con los nuevos datos
+					return {
+						...revision,
+						estatus: rev.estatus,
+						trabajo: rev.trabajo
+					};
+				}
+				return revision; // Las demás revisiones se mantienen igual
+	});
+
+	setStore({ ...store, revisiones: revisionesActualizadas });
 			},
 
 			addCar: (car) => {
