@@ -19,7 +19,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					razon: rev.razon,
 					fecha: rev.fecha,
 					hora: rev.hora,
-					causas: '',
+					estatus: 'En revision',
 					trabajo: ''
 				}
 				console.log("revision en el flux:", revision)
@@ -32,6 +32,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				console.log("Revisiones actualizadas:", getStore().revisiones)
 				
+				
+			},
+			editRevision: (placa, fecha, hora)=>{
 				
 			},
 

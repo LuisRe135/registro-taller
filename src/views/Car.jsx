@@ -5,10 +5,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const Car = () => {
   const location = useLocation();
-  const carro = location.state.vehiculo
+  const carro = location.state.vehiculo1 || location.state.carro;
   const [razon, setRazon] = useState('')
   const {store, actions} = useContext(Context)
   let revisiones = store.revisiones
+  const navigate = useNavigate();
   useEffect(() => {
     console.log("Revisiones en el store cambiaron:", store.revisiones);
 }, [store.revisiones]);
@@ -32,6 +33,7 @@ const Car = () => {
     actions.addRevision(infoRevision)
    
     console.log("en agregarRevision:",infoRevision)
+    setRazon("")
     
   }
 
@@ -55,25 +57,27 @@ const Car = () => {
         <div>{carro.color}</div>
 
 
-        <label for="owner" className="form-label">Razon de la visita</label>
-        <input className="form-control" type="text"id="owner" placeholder="Por que vino al taller?" 
+        <label className="form-label">Razon de la visita</label>
+        <input className="form-control" type="text"id="owner" placeholder="Por que vino al taller?" value={razon}
           onChange={(event) => setRazon(event.target.value)}></input>
 
           <button type="button" className="btn btn-primary" onClick={()=> agregarRevision()}>Agregar una nueva revision</button>
           <button type="button" className="btn btn-primary" onClick={()=> (actions.showRevisiones())}>Ver revisiones</button>
             {/* Revision actual: por que entro al taller? agregar la reparacion que se le hizo cuando este listo
-
+                                                      /////////////
             Revisiones pasadas: Una lista con las fechas, fallas, reparacion que se le hizo o resultado de la revision. */}
         <div className='container'>
           <ul>
             <div>
               {store.revisiones && store.revisiones.length > 0 ? (
-                store.revisiones.map((item, index) => (
+                store.revisiones.filter((revision)=> revision.placa === carro.placa).map((item, index) => (
                   <li key={index}>
                     <div>{item.fecha}</div>
                     <div>{item.hora}</div>
                     <div>{item.razon}</div>
                     
+                    {/* Boton que redireccione a Revision.jsx */}
+                    <button onClick={()=>{navigate("/revision", { state: {item} })}}>Editar</button>
                   </li>
                 ))
               ) : (

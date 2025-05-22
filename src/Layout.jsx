@@ -6,6 +6,7 @@ import UnderInspection from './views/UnderInspection.jsx'
 import injectContext from './js/store/appContext.js'
 import Revision from './views/Revision.jsx'
 import AddCar from './views/AddCar.jsx'
+import Revision from './views/Revision.jsx'
 
 
 export const Layout = () => {
@@ -19,6 +20,7 @@ export const Layout = () => {
                 <Route exact path='/underInspection' element={<UnderInspection/>}></Route>
                 <Route exact path='/revision' element={<Revision/>}></Route>
                 <Route exact path='/addCar' element={<AddCar/>} />
+                <Route exact path='/revision' element={<Revision/>} />
 
 
             </Routes>

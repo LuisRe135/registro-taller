@@ -1,19 +1,19 @@
 import React, { useContext, useState } from 'react'
 import { Context } from '../js/store/appContext.js'
-import Navbar from '../components/Navbar.jsx'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom"
 
 export const Home = () => {
-
+  
   const {store, actions} = useContext(Context)
   const [placa, setPlaca] =useState("")
   
   const navigate = useNavigate();
-  
+  const vehiculos = store.vehiculos
   const findCarAndProceed = (placa) =>{
     if (actions.findCar(placa)){
-      
-      navigate("/car")
+      let carro = (vehiculos.find(vehiculo => vehiculo.placa == placa))
+      console.log(carro)
+      navigate("/car", {state : {carro}})
     }
     else {
       console.log("Paso por aqui")
@@ -22,8 +22,8 @@ export const Home = () => {
     }
   }
   return (
-    <div>Home
-        <Navbar></Navbar>
+    <div className='d-flex container justify-content-center align-items-center m-5'>
+       
         {/*     aqui agarrar la placa del carro.
                 verificar que existe
                 si existe: ir a una pagina que muestre la info del carro, con la opcion de iniciar una nueva revision
@@ -32,8 +32,8 @@ export const Home = () => {
 
         <label>Inserte numero de placa
         </label>
-        <input onChange={(event) => setPlaca(event.target.value)}></input>
-        <button onClick={()=>findCarAndProceed(placa) }>Buscar</button>
+        <input className='form-control' onChange={(event) => setPlaca(event.target.value)}></input>
+        <button className="btn btn-info " onClick={()=>findCarAndProceed(placa) }>Buscar</button>
 
     </div>
   )

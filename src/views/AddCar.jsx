@@ -11,7 +11,7 @@ const AddCar = () => {
     const navigate = useNavigate();
   
     const {store, actions} = useContext(Context)
-    const [vehiculo, setVehiculo] = useState({
+    const [vehiculo1, setVehiculo1] = useState({
         placa: placa,
         owner: "",
         marca: "",
@@ -21,8 +21,8 @@ const AddCar = () => {
      })
 
     const addCarResetPlaca = () =>{
-        actions.addCar(vehiculo)
-        navigate("/car", { state: {vehiculo} })
+        actions.addCar(vehiculo1)
+        navigate("/car", { state: {vehiculo1} })
         
     }    
   return (
@@ -32,58 +32,58 @@ const AddCar = () => {
          */}
          <div className='container'>
               <h3>Informacion del Vehiculo</h3>
-              <label for="placa" className="form-label">Placa</label>
+              <label className="form-label">Placa</label>
               <input className="form-control" type="text" id="placa" placeholder="Placa" 
-              value={vehiculo.placa} 
+              value={vehiculo1.placa} 
               onChange={
-                            (event) => setVehiculo({
-                                ...vehiculo,
+                            (event) => setVehiculo1({
+                                ...vehiculo1,
                                 placa: event.target.value
                             })
                         }></input>
-              <label for="owner" className="form-label">Prepietario</label>
+              <label className="form-label">Prepietario</label>
               <input className="form-control" type="text"id="owner" placeholder="Nombre del propietario"
-              value={vehiculo.owner} 
+              value={vehiculo1.owner} 
               onChange={
-                            (event) => setVehiculo({
-                                ...vehiculo,
+                            (event) => setVehiculo1({
+                                ...vehiculo1,
                                 owner: event.target.value
                             })
                         } ></input>
-               <label for="marca" className="form-label">Marca</label>
+               <label className="form-label">Marca</label>
               <input className="form-control" type="text" id='marca' placeholder="Marca"
-              value={vehiculo.marca} 
+              value={vehiculo1.marca} 
               onChange={
-                            (event) => setVehiculo({
-                                ...vehiculo,
+                            (event) => setVehiculo1({
+                                ...vehiculo1,
                                 marca: event.target.value
                             })
                         } ></input>
               
-              <label for="model" className="form-label">Modelo</label>
+              <label className="form-label">Modelo</label>
               <input className="form-control" type="text" id='model' placeholder="Modelo"
-              value={vehiculo.modelo} 
+              value={vehiculo1.modelo} 
               onChange={
-                            (event) => setVehiculo({
-                                ...vehiculo,
+                            (event) => setVehiculo1({
+                                ...vehiculo1,
                                 modelo: event.target.value
                             })
                         } ></input>
-               <label for="year" className="form-label">Año</label>
+               <label className="form-label">Año</label>
                <input className="form-control" id='year' type="text" placeholder="Año"
-              value={vehiculo.year} 
+              value={vehiculo1.year} 
               onChange={
-                            (event) => setVehiculo({
-                                ...vehiculo,
+                            (event) => setVehiculo1({
+                                ...vehiculo1,
                                 year: event.target.value
                             })
                         } ></input>
-               <label for="color" className="form-label">Color</label>
+               <label className="form-label">Color</label>
                <input className="form-control" type="text" id="color" placeholder="Color"
-              value={vehiculo.color} 
+              value={vehiculo1.color} 
               onChange={
-                            (event) => setVehiculo({
-                                ...vehiculo,
+                            (event) => setVehiculo1({
+                                ...vehiculo1,
                                 color: event.target.value
                             })
                         } ></input>
