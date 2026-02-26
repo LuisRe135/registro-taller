@@ -10,8 +10,9 @@ const Revision = () => {
   const vehiculos = store.vehiculos
   let carro = (vehiculos.find(vehiculo => vehiculo.placa == revision.placa))
   const editarYRedireccionar = () => {
-    actions.editRevision(revision);
-    navigate("/car", {state : {carro}})
+    
+    actions.editRevision(revision, store.car.placa);
+    navigate("/car")
   }
   
   return (
@@ -20,11 +21,15 @@ const Revision = () => {
         {/* Fecha */}
         <h2>{revision.fecha}</h2>
         {/* razon por la que visita el taller */}
-        <input className="form-control" type="text"id="owner" value={revision.razon}
+        <h2>{revision.razon}</h2>
+
+        {/* Para editar la razon en un siguiente paso */}
+        {/* <input className="form-control" type="text"id="owner" value={revision.razon}
           onChange={(event) => setRevision({
             ...revision,
             razon: event.target.value})}></input>
-        
+         */}
+         
         {/* Estatus: en revision, reparado, no reparado */}
         <select className="form-select" type="text"id="owner" value={revision.estatus}
           onChange={(event) => setRevision({

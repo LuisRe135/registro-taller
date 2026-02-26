@@ -9,11 +9,14 @@ export const Home = () => {
   
   const navigate = useNavigate();
   const vehiculos = store.vehiculos
-  const findCarAndProceed = (placa) =>{
-    if (actions.findCar(placa)){
-      let carro = (vehiculos.find(vehiculo => vehiculo.placa == placa))
-      console.log(carro)
-      navigate("/car", {state : {carro}})
+  const findCarAndProceed = async(placa) =>{
+    const found = await actions.findCar(placa)
+    console.log(found)
+    if (found){
+      // let carro = (vehiculos.find(vehiculo => vehiculo.placa == placa))
+      // console.log(carro)
+      
+      navigate("/car")
     }
     else {
       console.log("Paso por aqui")
