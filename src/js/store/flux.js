@@ -4,12 +4,34 @@ const getState = ({ getStore, getActions, setStore }) => {
 			personas: ["Pedro","Maria"],
 			vehiculos: [],
 			revisiones: [],
-			car: {}
+			car: {},
+			taller: null,
+			token: localStorage.getItem("token") || null
 		},
 		actions: {
 
 			// 		POST
+			register: async(taller) => {
+				const response = await fetch("http://127.0.0.1:5000/public/register", {
+					method: "POST",
+					 headers: {
+    					"Content-Type": "application/json"
+  					},
+					body: JSON.stringify(taller)
+				})
 
+				const data = await response.json()
+				console.log("Aqui se agregan carros", data)
+
+
+				//    Con este codigo abajo se agrega en el store
+
+				// const store = getStore()
+				// setStore({ ...store, car: car });
+				// setStore(prev => ({ ...prev, car }))
+				// setStore({ car: car });
+				
+			},
 			addCar: async(car) => {
 				const response = await fetch("http://127.0.0.1:5000/public/car", {
 					method: "POST",
@@ -35,41 +57,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 				await fetch("http://127.0.0.1:5000/public/revision", {
 					method: "POST",
 					headers: {
-    					"Content-Type": "application/json"
+						"Content-Type": "application/json"
   					},
 					body: JSON.stringify(rev)
 				})
 
-				// const data = await response.json()
-				// console.log("Aqui se agregan revisiones", data)
 				const response = await fetch("http://127.0.0.1:5000/public/revisions/" + rev.placa, {
 					method: "GET"
 				})
 				const revisiones = await response.json()
 				setStore({ revisiones: revisiones })
 
-				//		Debajo: Agrega revision en store
-
-				// const store = getStore();
-				// console.log("despues del getStore")
-				// let revision = {
-				// 	placa: rev.placa,
-				// 	razon: rev.razon,
-				// 	fecha: rev.fecha,
-				// 	hora: rev.hora,
-				// 	estatus: 'En revision',
-				// 	trabajo: ''
-				// }
-				// console.log("revision en el flux:", revision)
-
-				// console.log("Before update, revisiones:", store.revisiones);
-				// // agrega revision
-				// let updatedRevisiones = store.revisiones;
-				// updatedRevisiones.push(revision)
-				// setStore({...store, revisiones: updatedRevisiones});
-
-				// console.log("Revisiones actualizadas:", getStore().revisiones)
-				
+				return true
 				
 			},
 
@@ -80,7 +79,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				
 				console.log("Entro al findCar")
 				const response = await fetch("http://127.0.0.1:5000/public/car/"+plate, {
-					method: "GET"
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + getStore().token
+  					}
 				});
 				console.log("Segundo checkpoint")
 				const carro = await response.json()
@@ -96,20 +99,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const revisiones = await response.json()
 					console.log("en findCar:", revisiones)
 					setStore({ car: carro, revisiones: revisiones })
-					// dispatch({
-					// 	type: "find car",
-					// 	payload: {}
-					// })
-					// const store = getStore()
-					// console.log("fC carro:", store.car)
-					// console.log("fC revisiones:", store. revisiones)
+					
 					
 					console.log("fC 2 carro:", carro)
 
 					console.log("en findCar:", getStore().revisiones)
 					
-					// const store = getStore()
-					// setStore({ ...store, car: carro })
+					
 					
 					return true
 				}
@@ -208,10 +204,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				actions.findCar(placa)
 
-			}
-			
+			},
+			login: async (email, password) => {
+				try {
+					const response = await fetch("http://127.0.0.1:5000/public/login", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({ email, password })
+					});
+					const data = await response.json();
+					if (response.ok) {
+						localStorage.setItem("token", data.access_token);
+						setStore({ taller: data.taller, token: data.access_token });
+						return { success: true };
+					} else {
+						return { success: false, error: data.error };
+					}
+				} catch (error) {
+					return { success: false, error: "Network error" };
+				}
+			},
+
+			// 		GET
+
 		}
 	};
-};
-
+}
 export default getState;

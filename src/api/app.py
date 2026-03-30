@@ -8,6 +8,7 @@ from admin_bp import admin_bp                       # Acá importamos rutas admi
 from public_bp import public_bp                     # Acá importamos rutas public
 from database import db                             # Acá importamos la base de datos inicializada
 
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 

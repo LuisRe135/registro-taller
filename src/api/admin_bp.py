@@ -9,8 +9,8 @@ from datetime import timedelta                                   # importa tiemp
 
 admin_bp = Blueprint('admin', __name__)     # instanciar admin_bp desde clase Blueprint para crear las rutas.
 
-bcrypt = Bcrypt()
-jwt = JWTManager()
+# bcrypt = Bcrypt()
+
 
 # RUTA TEST de http://127.0.0.1:5000/admin_bp que muestra "Hola mundo":
 @admin_bp.route('/', methods=['GET'])
