@@ -41,7 +41,8 @@ const Car = () => {
         razon: razon,
         fecha: formattedDate,
         hora: formattedTime,
-        estatus: 'En revision'
+        estatus: 'En revision',
+        trabajo: ''
         
       }
           
@@ -49,7 +50,7 @@ const Car = () => {
       setRazon("")
     
   }
-
+  console.log("store.token:", store.token)
   console.log("store.car al re-render:", store.car)
   console.log("store.revisiones al re-render:", store.revisiones)
 

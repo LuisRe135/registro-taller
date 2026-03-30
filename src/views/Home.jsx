@@ -8,13 +8,13 @@ export const Home = () => {
   const [placa, setPlaca] =useState("")
   
   const navigate = useNavigate();
-  const vehiculos = store.vehiculos
+  const token = store.token
   const findCarAndProceed = async(placa) =>{
     const found = await actions.findCar(placa)
     console.log(found)
     if (found){
       // let carro = (vehiculos.find(vehiculo => vehiculo.placa == placa))
-      // console.log(carro)
+      console.log("token:", token)
       
       navigate("/car")
     }

@@ -1,29 +1,35 @@
 from database import db
+from datetime import datetime, timezone
 
-# class Taller(db.Model):
-#     __tablename__ = 'talleres'
+class Taller(db.Model):
+    __tablename__ = 'talleres'
 
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(50), unique=True, nullable=False)
-#     email = db.Column(db.String(100), unique=True, nullable=False)
-#     password = db.Column(db.String(255), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    address = db.Column(db.String(200), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-#     # Relaciones
-#     revisiones = db.relationship('Revision', back_populates='taller', lazy=True)
+    def __init__(self, name, email, password, phone=None, address=None):
+        self.name = name
+        self.email = email
+        self.password = password
+        self.phone = phone
+        self.address = address
 
-#     def __init__(self, name, email, password):
-#         self.name = name
-#         self.email = email
-#         self.password = password
-
-#     def serialize(self):
-#         return {
-#             "id": self.id,
-#             "name": self.name,
-#             "email": self.email,
-#             "revisiones": [rev.serialize_basic() for rev in self.revisiones]
-#         }
-
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "address": self.address,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat()
+        }
 
 class Car(db.Model):
     __tablename__ = 'cars'
