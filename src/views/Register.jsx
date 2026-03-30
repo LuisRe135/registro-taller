@@ -72,7 +72,7 @@ const Register = () =>{
                                 } ></input>
                     </div>
                     <button className='btn btn-primary mt-3'
-                    onClick={() => actions.register(taller)}>Registrar</button>
+                    onClick={() => handleRegister()}>Registrar</button>
             </div>
          )
      }

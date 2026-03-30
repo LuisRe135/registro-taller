@@ -54,16 +54,24 @@ const getState = ({ getStore, getActions, setStore }) => {
 				
 			},
 			addRevision: async(rev) =>{
+				const token = getStore().token
+
 				await fetch("http://127.0.0.1:5000/public/revision", {
 					method: "POST",
 					headers: {
-						"Content-Type": "application/json"
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					
   					},
 					body: JSON.stringify(rev)
 				})
 
 				const response = await fetch("http://127.0.0.1:5000/public/revisions/" + rev.placa, {
-					method: "GET"
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+  					}
 				})
 				const revisiones = await response.json()
 				setStore({ revisiones: revisiones })
@@ -76,13 +84,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			findCar: async(plate) => {  //recordar poner el async
 				
-				
+				const token = getStore().token
 				console.log("Entro al findCar")
 				const response = await fetch("http://127.0.0.1:5000/public/car/"+plate, {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
-						"Authorization": "Bearer " + getStore().token
+						"Authorization": "Bearer " + token
   					}
 				});
 				console.log("Segundo checkpoint")
@@ -94,7 +102,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				
 				if (!carro.error){
 					const response = await fetch("http://127.0.0.1:5000/public/revisions/"+plate, {
-						method: "GET"
+						method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+  					}
 					});
 					const revisiones = await response.json()
 					console.log("en findCar:", revisiones)
@@ -217,6 +229,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const data = await response.json();
 					if (response.ok) {
 						localStorage.setItem("token", data.access_token);
+						const payload = JSON.parse(atob(data.access_token.split('.')[1]))
+						console.log("Token expira:", new Date(payload.exp * 1000))
 						setStore({ taller: data.taller, token: data.access_token });
 						return { success: true };
 					} else {

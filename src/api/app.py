@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os # para saber la ruta absoluta de la db si no la encontramos
 from flask_bcrypt import Bcrypt  # para encriptar y comparar
 from flask import Flask, request, jsonify # Para endpoints
@@ -17,7 +18,8 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_cred
 app.config["JWT_SECRET_KEY"] = "valor-variable"  # clave secreta para firmar los tokens.( y a futuro va en un archivo .env)
 jwt = JWTManager(app)  # isntanciamos jwt de JWTManager utilizando app para tener las herramientas de encriptacion.
 bcrypt = Bcrypt(app)   # para encriptar password
-
+app.config["JWT_VERIFY_SUB"] = True
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 # REGISTRAR BLUEPRINTS ( POSIBILIDAD DE UTILIZAR EL ENTORNO DE LA app EN OTROS ARCHIVOS Y GENERAR RUTAS EN LOS MISMOS )
 

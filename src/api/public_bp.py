@@ -42,6 +42,7 @@ def get_cars():
 
 # Ruta para obtener las revisiones
 @public_bp.route('/revisions/<placa>', methods=['GET'])
+@jwt_required()
 def get_revisions(placa):
     car = Car.query.filter_by(placa=placa).first()
     if not car:
@@ -161,8 +162,8 @@ def login():
         if not taller.is_active:
             return jsonify({'error': 'Esta cuenta está desactivada.'}), 403
 
-        expires = timedelta(hours=1)
-        access_token = create_access_token(identity=str(taller.id), expires_delta=False)
+        expires = timedelta(minutes=5)
+        access_token = create_access_token(identity=str(taller.id), expires_delta=expires)
 
         return jsonify({
             'access_token': access_token,
