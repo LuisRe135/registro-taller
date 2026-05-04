@@ -1,5 +1,6 @@
 import React from 'react'
 import {BrowserRouter, Route, Routes} from "react-router-dom"
+import Landing from './views/Landing.jsx'
 import Home from './views/Home.jsx'
 import Car from './views/Car.jsx'
 
@@ -17,7 +18,8 @@ export const Layout = () => {
     <div>
         <BrowserRouter basement={basename}>
             <Routes>
-                <Route exact path='/' element={<Home/>}></Route>
+                <Route exact path='/' element={<Landing/>} />
+                <Route exact path='/home' element={<Home/>} />
                 <Route exact path='/car' element={<Car/>}></Route>
                 <Route exact path='/register' element={<Register/>} />
                 <Route exact path='/addCar' element={<AddCar/>} />

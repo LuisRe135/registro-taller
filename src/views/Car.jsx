@@ -8,7 +8,6 @@ const Car = () => {
   const {store, actions} = useContext(Context)
   
   const carro = store.car 
-  console.log("aqui el carro antes del useEffect:",carro)
   const [razon, setRazon] = useState('')
   const navigate = useNavigate();
   const [revisionesLocales, setRevisionesLocales] = useState([]);
@@ -50,10 +49,8 @@ const Car = () => {
       setRazon("")
     
   }
-  console.log("store.token:", store.token)
-  console.log("store.car al re-render:", store.car)
-  console.log("store.revisiones al re-render:", store.revisiones)
 
+  
   return (
     <div>Car
         <Navbar />
@@ -65,7 +62,7 @@ const Car = () => {
             Dueño
             */}
 
-        <div>{store.car.placa}</div>
+        <div>{carro.placa}</div>
         <div>{carro.owner}</div>
         <div>{carro.marca}</div>
         <div>{carro.modelo}</div>
@@ -78,7 +75,7 @@ const Car = () => {
           onChange={(event) => setRazon(event.target.value)}></input>
 
           <button type="button" className="btn btn-primary" onClick={()=> agregarRevision()}>Agregar una nueva revision</button>
-          <button type="button" className="btn btn-primary" onClick={()=> (actions.showRevisiones(carro.placa))}>Ver revisiones</button>
+      
             {/* Revision actual: por que entro al taller? agregar la reparacion que se le hizo cuando este listo
                                                       /////////////
             Revisiones pasadas: Una lista con las fechas, fallas, reparacion que se le hizo o resultado de la revision. */}

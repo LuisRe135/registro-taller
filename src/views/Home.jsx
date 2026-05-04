@@ -13,12 +13,11 @@ export const Home = () => {
     const found = await actions.findCar(placa)
     console.log(found)
     if (found){
-      // let carro = (vehiculos.find(vehiculo => vehiculo.placa == placa))
-      console.log("token:", token)
-      
+            
       navigate("/car")
     }
     else {
+      actions.resetStore() 
       console.log("Paso por aqui")
       console.log(placa)
       navigate("/addCar", {state : {placa}})

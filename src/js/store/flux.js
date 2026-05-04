@@ -23,13 +23,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const data = await response.json()
 				console.log("Aqui se agregan carros", data)
 
-
-				//    Con este codigo abajo se agrega en el store
-
-				// const store = getStore()
-				// setStore({ ...store, car: car });
-				// setStore(prev => ({ ...prev, car }))
-				// setStore({ car: car });
 				
 			},
 			addCar: async(car) => {
@@ -44,13 +37,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const data = await response.json()
 				console.log("Aqui se agregan carros", data)
 
-
-				//    Con este codigo abajo se agrega en el store
-
-				// const store = getStore()
-				// setStore({ ...store, car: car });
-				// setStore(prev => ({ ...prev, car }))
-				setStore({ car: car });
+				setStore({ car: car, revisiones: [] });
 				
 			},
 			addRevision: async(rev) =>{
@@ -96,11 +83,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				console.log("Segundo checkpoint")
 				const carro = await response.json()
 				console.log("carro individual",carro.placa)
-				
-				
+
+
 				//	MOSTRAR LA INFO DEL BACK-END EN EL FRONT-END
-				
-				if (!carro.error){
+
+				if (response.ok){
 					const response = await fetch("http://127.0.0.1:5000/public/revisions/"+plate, {
 						method: "GET",
 					headers: {
@@ -109,7 +96,6 @@ const getState = ({ getStore, getActions, setStore }) => {
   					}
 					});
 					const revisiones = await response.json()
-					console.log("en findCar:", revisiones)
 					setStore({ car: carro, revisiones: revisiones })
 					
 					
@@ -125,35 +111,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			},
 
-			showRevisiones: async(plate) =>{
-				const response = await fetch("http://127.0.0.1:5000/public/revisions/"+plate, {
-					method: "GET"
-				});
-				const rev = await response.json()
-				console.log("revisiones de la DB:", rev)
-				// setStore({ revisiones });
-				// const store = getStore()
-				// setStore({...store, revisiones: rev})
-				// console.log("dentro de showRevisiones", store)
-				
-				// setStore(prev => ({
-				// 					...prev, 
-				// 					revisiones: rev
-				// 			}))
-				// console.log("showing revisions123:", store)
-			},
 			showCars: () =>{
 				const store = getStore()
 				console.log("showing:", store.vehiculos)
 			},
 
 
-			// prev => {
-			// 		console.log("Store antes:", prev)
-			// 		const nuevo = { ...prev, revisiones: revisiones }
-			// 		console.log("Store después:", nuevo)
-			// 		return nuevo
-			// 		}
+		
 			// 		PUT
 
 			editRevision: async (rev, placa)=>{
@@ -172,34 +136,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 
 				const data = await response.json();
-				console.log("Revision updated:", data)
+				
 				const  actions = getActions()
 				actions.findCar(placa)
 			
 
-
-				//		Debajo: edita revision en el store 
-
-				// const store = getStore()
-				// const revisionesActualizadas = store.revisiones.map(revision => {
-				// if (
-				// 	revision.placa === rev.placa &&
-				// 	revision.fecha === rev.fecha &&
-				// 	revision.hora === rev.hora
-				// ) {
-				// 	// Retorna una nueva revisión con los nuevos datos
-				// 	return {
-				// 		...revision,
-				// 		estatus: rev.estatus,
-				// 		trabajo: rev.trabajo
-				// 	};
-				// }
-				// return revision; // Las demás revisiones se mantienen igual
-				// });
-
-				// setStore({ ...store, revisiones: revisionesActualizadas });
 			},
-
+			resetStore: () => setStore({car: {}, revisiones: []}),
 			deleteRevision: async(rev, placa)=>{
 				const response = await fetch(`http://127.0.0.1:5000/public/revision/${rev}`, {
 					method: "DELETE",
@@ -241,7 +184,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			// 		GET
 
 		}
 	};

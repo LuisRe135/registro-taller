@@ -25,7 +25,7 @@ def about():
 
 # Ruta para encontrar un carro por placa 
 @public_bp.route('/car/<placa>', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def get_car(placa):    
     car = Car.query.filter_by(placa=placa).first()
 
@@ -162,7 +162,7 @@ def login():
         if not taller.is_active:
             return jsonify({'error': 'Esta cuenta está desactivada.'}), 403
 
-        expires = timedelta(minutes=5)
+        expires = timedelta(hours=8)
         access_token = create_access_token(identity=str(taller.id), expires_delta=expires)
 
         return jsonify({

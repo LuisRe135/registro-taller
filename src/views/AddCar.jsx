@@ -20,7 +20,7 @@ const AddCar = () => {
         color: "",
      })
 
-    const addCarResetPlaca = () =>{
+    const addCar = () =>{
         actions.addCar(vehiculo1)
         navigate("/car") // Deberia NO enviar el vehiculo como estado, sino sacar la info de inmediato del flux
         
@@ -90,13 +90,9 @@ const AddCar = () => {
          </div>
 
          <button type="button" className="btn btn-primary"
-         onClick={() => addCarResetPlaca()}
+         onClick={() => addCar()}
          >Enviar</button>
 
-         {/*    Tal vez borrar   */}
-         <button type="button" className="btn btn-primary"
-         onClick={() => actions.showCars()}
-         >Carros guardados</button>
 
     </div>
   )

@@ -11,9 +11,9 @@ const Login = () =>{
                email: "",
                password: ""
             })
-        const handleLogin = () => {
-            actions.login(taller.email, taller.password)
-            navigate("/")
+        const handleLogin = async () => {
+            const result = await actions.login(taller.email, taller.password)
+            if (result.success) navigate("/home")
         }
         return (
             <div className='container'>
