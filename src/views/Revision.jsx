@@ -79,6 +79,16 @@ const Revision = () => {
     <div className="revision-edit-page">
       <Navbar />
       <div className="revision-edit-body">
+        <div style={{ marginBottom: 20 }}>
+          <button className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            onClick={() => navigate("/car")}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Volver al vehículo
+          </button>
+        </div>
+
         <div className="revision-edit-header">
           <h1>Editar Revisión</h1>
           <p className="revision-edit-meta">

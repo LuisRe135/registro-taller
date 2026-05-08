@@ -22,8 +22,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				const data = await response.json()
 				console.log("Aqui se agregan carros", data)
-
-				
+				return response.ok ? { success: true } : { success: false, error: data.error }
 			},
 			addCar: async(car) => {
 				const response = await fetch("http://127.0.0.1:5000/public/car", {

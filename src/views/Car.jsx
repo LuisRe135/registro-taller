@@ -67,6 +67,7 @@ const Car = () => {
   const [razon, setRazon] = useState('')
   const navigate = useNavigate();
   const [revisionesLocales, setRevisionesLocales] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (store.car && Object.keys(store.car).length > 0 && store.car.placa) {
@@ -91,6 +92,8 @@ const Car = () => {
     }
     await actions.addRevision(infoRevision)
     setRazon("")
+    setShowAlert(true)
+    setTimeout(() => setShowAlert(false), 5000)
   }
 
   console.log("store.token:", store.token)
@@ -103,6 +106,16 @@ const Car = () => {
     <div className="car-page">
       <Navbar />
       <div className="car-page-body">
+
+        <div>
+          <button className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            onClick={() => navigate("/home")}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Volver a búsqueda
+          </button>
+        </div>
 
         <div className="car-header-card">
           <div className="car-header-top">
@@ -151,6 +164,19 @@ const Car = () => {
             </button>
           </div>
         </div>
+
+        {showAlert && (
+          <div className="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>Revisión agregada</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+            </svg>
+            <button type="button" className="btn-close ms-auto" onClick={() => setShowAlert(false)} aria-label="Close" />
+          </div>
+        )}
 
         <div className="history-section">
           <div className="history-header">

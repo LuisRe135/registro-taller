@@ -18,9 +18,13 @@ const Register = () => {
     name: "", email: "", password: "", phone: "", address: ""
   })
 
-  const handleRegister = () => {
-    actions.register(taller)
-    navigate("/login")
+  const handleRegister = async () => {
+    const result = await actions.register(taller)
+    if (result.success) {
+      const loginResult = await actions.login(taller.email, taller.password)
+      if (loginResult.success) navigate("/home")
+      else navigate("/login")
+    }
   }
 
   return (
