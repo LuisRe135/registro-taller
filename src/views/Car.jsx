@@ -147,7 +147,7 @@ const Car = () => {
               <p className="nv-subtitle">Registrar un nuevo servicio para este vehículo</p>
             </div>
           </div>
-          <label className="form-label">Motivo de ingreso al taller *</label>
+          <label className="nv-title">Motivo de ingreso al taller *</label>
           <textarea
             className="form-control"
             placeholder="Describe por qué el vehículo está en el taller hoy (ej. cambio de aceite programado, ruido en frenos, luz de motor encendida...)"
@@ -159,7 +159,8 @@ const Car = () => {
           <div className="nv-footer">
             <span className="nv-date">Hoy · {today}</span>
             <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-              onClick={() => agregarRevision()}>
+              onClick={() => agregarRevision()}
+              disabled={!razon.trim()}>
               <SendIcon /> Iniciar Revisión
             </button>
           </div>

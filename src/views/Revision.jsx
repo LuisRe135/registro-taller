@@ -7,6 +7,7 @@ const STATUS_OPTIONS = [
   {
     value: 'En revision',
     label: 'En Revisión',
+    baseClass: 'base-pending',
     activeClass: 'active-pending',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -17,6 +18,7 @@ const STATUS_OPTIONS = [
   {
     value: 'En reparacion',
     label: 'En Reparación',
+    baseClass: 'base-in-progress',
     activeClass: 'active-in-progress',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,6 +30,7 @@ const STATUS_OPTIONS = [
   {
     value: 'Terminado',
     label: 'Completado',
+    baseClass: 'base-completed',
     activeClass: 'active-completed',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -38,6 +41,7 @@ const STATUS_OPTIONS = [
   {
     value: 'No reparado',
     label: 'No Reparado',
+    baseClass: 'base-failed',
     activeClass: 'active-failed',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -101,13 +105,13 @@ const Revision = () => {
         <div className="status-card">
           <div className="status-card-title">
             <div className="icon-box-muted"><TagIcon /></div>
-            <h3>Estado</h3>
+            <h3>Modificar Estado</h3>
           </div>
           <div className="status-grid">
             {STATUS_OPTIONS.map((opt) => (
               <div
                 key={opt.value}
-                className={`status-option ${revision.estatus === opt.value ? opt.activeClass : ''}`}
+                className={`status-option ${revision.estatus === opt.value ? opt.activeClass : opt.baseClass}`}
                 onClick={() => setRevision({ ...revision, estatus: opt.value })}
               >
                 <span>{opt.icon}</span>

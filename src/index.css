@@ -422,10 +422,20 @@ h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
   user-select: none;
 }
 .status-option:hover { border-color: rgba(41,41,41,0.2); }
-.status-option.active-pending  { border-color: #fde68a; background: #fefce8; color: #a16207; }
-.status-option.active-in-progress { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
-.status-option.active-completed { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
-.status-option.active-failed   { border-color: #fecaca; background: #fef2f2; color: #b91c1c; }
+
+/* unselected — light tint */
+.status-option.base-pending    { border-color: #fde68a; background: #fefce8; color: #ca8a04; }
+.status-option.base-in-progress{ border-color: #bfdbfe; background: #eff6ff; color: #3b82f6; }
+.status-option.base-completed  { border-color: #bbf7d0; background: #f0fdf4; color: #16a34a; }
+.status-option.base-failed     { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
+
+/* selected — more intense */
+.status-option.active-pending    { border-color: #ca8a04; background: #fef08a; color: #78350f; }
+.status-option.active-in-progress{ border-color: #3b82f6; background: #dbeafe; color: #1e3a8a; }
+.status-option.active-completed  { border-color: #16a34a; background: #dcfce7; color: #14532d; }
+.status-option.active-failed     { border-color: #ef4444; background: #fee2e2; color: #7f1d1d; }
+
+.btn-primary:disabled { opacity: 0.45 !important; cursor: not-allowed !important; box-shadow: none !important; }
 
 .details-card {
   background: var(--surface); border: 1px solid var(--border);
