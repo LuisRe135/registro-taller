@@ -102,25 +102,7 @@ const Revision = () => {
           </p>
         </div>
 
-        <div className="status-card">
-          <div className="status-card-title">
-            <div className="icon-box-muted"><TagIcon /></div>
-            <h3>Modificar Estado</h3>
-          </div>
-          <div className="status-grid">
-            {STATUS_OPTIONS.map((opt) => (
-              <div
-                key={opt.value}
-                className={`status-option ${revision.estatus === opt.value ? opt.activeClass : opt.baseClass}`}
-                onClick={() => setRevision({ ...revision, estatus: opt.value })}
-              >
-                <span>{opt.icon}</span>
-                <span>{opt.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
+       
         <div className="details-card">
           <div className="details-card-title">
             <div className="icon-box-muted"><DocIcon /></div>
@@ -134,7 +116,7 @@ const Revision = () => {
           <label className="form-label">Trabajo Realizado *</label>
           <textarea
             className="form-control"
-            rows={5}
+            rows={2}
             placeholder="Describe el trabajo realizado..."
             value={revision.trabajo}
             onChange={(event) => setRevision({ ...revision, trabajo: event.target.value })}
@@ -143,6 +125,24 @@ const Revision = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
             <span className="char-count">{(revision.trabajo || '').length} caracteres</span>
           </div>
+          <div className="status-card">
+                    <div className="status-card-title">
+                      <div className="icon-box-muted"><TagIcon /></div>
+                      <h3>Modificar Estado</h3>
+                    </div>
+                    <div className="status-grid">
+                      {STATUS_OPTIONS.map((opt) => (
+                        <div
+                          key={opt.value}
+                          className={`status-option ${revision.estatus === opt.value ? opt.activeClass : opt.baseClass}`}
+                          onClick={() => setRevision({ ...revision, estatus: opt.value })}
+                        >
+                          <span>{opt.icon}</span>
+                          <span>{opt.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
           <div className="details-card-footer">
             <button className="btn btn-primary" onClick={() => editarYRedireccionar()}>
