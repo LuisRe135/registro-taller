@@ -82,6 +82,7 @@ class Revision(db.Model):
 
     # Relaciones
     car = db.relationship('Car', back_populates='revisiones')
+    observaciones = db.relationship('Observation', back_populates='revision', cascade="all, delete-orphan", lazy=True)
     # taller = db.relationship('Taller', back_populates='revisiones') // descomentar cuando se agregue el login
 
     def __init__(self, fecha, hora, razon, estatus, trabajo, car_id):  # Recordar poner el taller_id
@@ -114,4 +115,46 @@ class Revision(db.Model):
             "razon": self.razon,
             "estatus": self.estatus,
             "trabajo": self.trabajo,
+        }
+
+class Observation(db.Model):
+    __tablename__ = 'observaciones'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.String(50), nullable=False)
+    hora = db.Column(db.String(50), nullable=False)
+    observacion = db.Column(db.String(50), nullable=True)
+
+    # Claves foráneas
+    revision_id = db.Column(db.Integer, db.ForeignKey('revisiones.id'), nullable=False)
+    # taller_id = db.Column(db.Integer, db.ForeignKey('talleres.id'), nullable=False) // descomentar cuando se agregue login
+
+    # Relaciones
+    revision = db.relationship('Revision', back_populates='observaciones')
+    # taller = db.relationship('Taller', back_populates='revisiones') // descomentar cuando se agregue el login
+
+    def __init__(self, fecha, hora, observacion, revision_id):  # Recordar poner el taller_id
+        self.fecha = fecha
+        self.hora = hora
+        self.observacion = observacion
+        self.revision_id = revision_id
+        # self.taller_id = taller_id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "fecha": self.fecha,
+            "hora": self.hora,
+            "observacion": self.observacion,
+            "revision": self.revision.serialize()
+            # "taller": self.taller.serialize()
+        }
+
+    def serialize_basic(self):
+        # """Versión simplificada para listas."""
+        return {
+            "id": self.id,
+            "fecha": self.fecha,
+            "hora": self.hora,
+            "observacion": self.observacion,
         }

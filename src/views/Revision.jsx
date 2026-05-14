@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import { Context } from '../js/store/appContext.js'
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar'
@@ -73,12 +73,32 @@ const Revision = () => {
   const {store, actions} = useContext(Context)
   const vehiculos = store.vehiculos
   let carro = (vehiculos.find(vehiculo => vehiculo.placa == revision.placa))
+  const [observacion, setObservacion] = useState('')
+
+  useEffect(() => {
+    actions.getObservations(revision.id)
+  }, [])
 
   const editarYRedireccionar = () => {
     actions.editRevision(revision, store.car.placa);
     navigate("/car")
   }
-
+  const agregarObservacion = async () => {
+      const fecha = new Date();
+      const formattedDate = fecha.getDate().toString().padStart(2, '0') + '/' +
+                          (fecha.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                          fecha.getFullYear();
+      const formattedTime = fecha.toLocaleTimeString('en-GB');
+      const infoObservacion = {
+        fecha: formattedDate,
+        hora: formattedTime,
+        observacion: observacion,
+        revision_id: revision.id
+      }
+      await actions.addObservation(infoObservacion)
+      setObservacion('')
+      actions.getObservations(revision.id)
+    }
   return (
     <div className="revision-edit-page">
       <Navbar />
@@ -117,19 +137,38 @@ const Revision = () => {
             className="form-control"
             rows={2}
             placeholder="Describe cualquier observación relevante..."
-            // value={revision.trabajo}
-            // onChange={(event) => setRevision({ ...revision, trabajo: event.target.value })}
+            value={observacion}
+            onChange={(event) => setObservacion(event.target.value)}
             style={{ resize: 'vertical' }}
           />
-          <label className="form-label">Trabajo Realizado *</label>
-          <textarea
-            className="form-control"
-            rows={2}
-            placeholder="Describe el trabajo realizado..."
-            value={revision.trabajo}
-            onChange={(event) => setRevision({ ...revision, trabajo: event.target.value })}
-            style={{ resize: 'vertical' }}
-          />
+          <button className="btn btn-secondary btn-sm" style={{ marginTop: 6 }} onClick={agregarObservacion} disabled={!observacion.trim()}>
+            Agregar observación
+          </button>
+
+          {store.observaciones && store.observaciones.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              {store.observaciones.slice().sort((a, b) => b.id - a.id).map((obs) => (
+                <div key={obs.id} className="revision-item" style={{ marginBottom: 8 }}>
+                  <p className="revision-reason">{obs.observacion}</p>
+                  <p className="revision-date">{obs.fecha} · {obs.hora}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {revision.estatus === 'Terminado' && (
+            <>
+              <label className="form-label">Trabajo Realizado *</label>
+              <textarea
+                className="form-control"
+                rows={2}
+                placeholder="Describe el trabajo realizado..."
+                value={revision.trabajo}
+                onChange={(event) => setRevision({ ...revision, trabajo: event.target.value })}
+                style={{ resize: 'vertical' }}
+              />
+            </>
+          )}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
             <span className="char-count">{(revision.trabajo || '').length} caracteres</span>
           </div>
