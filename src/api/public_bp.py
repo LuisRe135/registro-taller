@@ -6,7 +6,7 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import Revision, Car, Taller                                          # importar tabla "User" de models
+from models import Revision, Car, Taller, Observation                                          # importar tabla "User" de models
 from database import db  
 from datetime import timedelta
 
@@ -139,6 +139,7 @@ def register():
         }), 201
 
     except Exception as e:
+        import traceback; traceback.print_exc()
         db.session.rollback()  # Si algo falla, deshacemos cambios en la DB
         return jsonify({'error': 'Error en el registro: ' + str(e)}), 500
 
@@ -304,6 +305,40 @@ def delete_taller():
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar el taller: ' + str(e)}), 500
     
+@public_bp.route('/observations/<int:rev_id>', methods=['GET'])
+def get_observations(rev_id):
+    revision = Revision.query.filter_by(id=rev_id).first()
+    if not revision:
+        return jsonify({"error": "Revision not found"}), 404
+    return jsonify([obs.serialize_basic() for obs in revision.observaciones]), 200
+
+
+@public_bp.route('/observation', methods=['POST'])
+def add_observation():
+    try:
+        fecha = request.json.get('fecha')
+        hora = request.json.get('hora')
+        observacion = request.json.get('observacion')
+        revision_id = request.json.get('revision_id')
+
+        if not revision_id:
+            return jsonify({'error': 'revision_id es obligatorio.'}), 400
+        if not observacion:
+            return jsonify({'error': 'La observacion es obligatoria.'}), 400
+
+        revision = Revision.query.filter_by(id=revision_id).first()
+        if not revision:
+            return jsonify({'error': 'Revision no encontrada.'}), 404
+
+        new_obs = Observation(fecha=fecha, hora=hora, observacion=observacion, revision_id=revision_id)
+        db.session.add(new_obs)
+        db.session.commit()
+        return jsonify({'message': 'Observacion agregada', 'observation': new_obs.serialize_basic()}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al agregar observacion: ' + str(e)}), 500
+
+
 @public_bp.route('/revision/<string:rev_id>', methods=['DELETE'])
 def delete_revision(rev_id):
     try:

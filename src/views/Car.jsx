@@ -245,9 +245,18 @@ const Car = () => {
                     </div>
                     {expandedItems[item.id] && (
                       <div className="revision-expanded">
-                        <p className="revision-expanded-label">Trabajo Realizado</p>
+                        {item.trabajo && (
+                          <>
+                            <p className="revision-expanded-label">Trabajo Realizado</p>
+                            <p id="trabajo" className="revision-expanded-text">{item.trabajo}</p>
+                            <hr style={{ borderColor: 'rgba(41,41,41,0.1)', margin: '10px 0' }} />
+                          </>
+                        )}
+                        <p className="revision-expanded-label">Última Observación</p>
                         <p className="revision-expanded-text">
-                          {item.trabajo || <span style={{ color: 'rgba(41,41,41,0.3)', fontStyle: 'italic' }}>Sin información registrada.</span>}
+                          {store.observaciones && store.observaciones.length > 0
+                            ? store.observaciones.slice().sort((a, b) => b.id - a.id)[0].observacion
+                            : <span style={{ color: 'rgba(41,41,41,0.3)', fontStyle: 'italic' }}>Sin observaciones registradas.</span>}
                         </p>
                       </div>
                     )}

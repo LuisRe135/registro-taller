@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			revisiones: [],
 			car: {},
 			taller: null,
+			observaciones: [],
 			token: localStorage.getItem("token") || null
 		},
 		actions: {
@@ -132,6 +133,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 				actions.findCar(placa)
 			
 
+			},
+			getObservations: async (rev_id) => {
+				const response = await fetch(`http://127.0.0.1:5000/public/observations/${rev_id}`, {
+					method: "GET",
+					headers: { "Content-Type": "application/json" }
+				})
+				const data = await response.json()
+				if (response.ok) setStore({ observaciones: data })
+			},
+			addObservation: async (obs) => {
+				const response = await fetch("http://127.0.0.1:5000/public/observation", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(obs)
+				})
+				const data = await response.json()
+				return response.ok ? { success: true, data } : { success: false, error: data.error }
 			},
 			resetStore: () => setStore({car: {}, revisiones: []}),
 			deleteRevision: async(rev, placa)=>{
