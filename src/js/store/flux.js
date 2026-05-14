@@ -71,7 +71,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			findCar: async(plate) => {  //recordar poner el async
 				
 				const token = getStore().token
-				console.log("Entro al findCar")
 				const response = await fetch("http://127.0.0.1:5000/public/car/"+plate, {
 					method: "GET",
 					headers: {
@@ -79,9 +78,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						"Authorization": "Bearer " + token
   					}
 				});
-				console.log("Segundo checkpoint")
 				const carro = await response.json()
-				console.log("carro individual",carro.placa)
 
 
 				//	MOSTRAR LA INFO DEL BACK-END EN EL FRONT-END
@@ -97,12 +94,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const revisiones = await response.json()
 					setStore({ car: carro, revisiones: revisiones })
 					
-					
-					console.log("fC 2 carro:", carro)
-
-					console.log("en findCar:", getStore().revisiones)
-					
-					
+							
 					
 					return true
 				}

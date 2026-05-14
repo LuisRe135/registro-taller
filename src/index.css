@@ -370,9 +370,10 @@ h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
 .revision-item {
   border: 1px solid var(--border); border-radius: 12px;
   padding: 14px 16px; margin-bottom: 10px;
-  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  display: flex; flex-direction: column;
 }
 
+.revision-item-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .revision-item-left { display: flex; align-items: flex-start; gap: 12px; }
 .revision-check {
   width: 32px; height: 32px; border-radius: 50%;
@@ -381,8 +382,18 @@ h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
 .revision-badges { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
 .revision-reason { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 4px 0; }
 .revision-date { font-size: 12px; color: var(--muted); margin: 0; }
-.revision-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.revision-item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .revision-actions { display: flex; gap: 6px; }
+
+.revision-expanded {
+  border-top: 1px solid var(--border);
+  margin-top: 12px; padding-top: 12px;
+}
+.revision-expanded-label {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px;
+}
+.revision-expanded-text { font-size: 14px; color: var(--body-text); margin: 0; line-height: 1.6; }
 
 /* ---- ADD CAR ---- */
 .addcar-page { min-height: 100vh; background: var(--bg); }

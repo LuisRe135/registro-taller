@@ -58,6 +58,18 @@ const SendIcon = () => (
   </svg>
 )
 
+const ChevronDown = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+)
+
+const ChevronUp = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+)
+
 const Car = () => {
   const location = useLocation();
   const {store, actions} = useContext(Context)
@@ -68,6 +80,8 @@ const Car = () => {
   const navigate = useNavigate();
   const [revisionesLocales, setRevisionesLocales] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [expandedItems, setExpandedItems] = useState({});
+  const toggleExpanded = (id) => setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
 
   useEffect(() => {
     if (store.car && Object.keys(store.car).length > 0 && store.car.placa) {
@@ -96,10 +110,7 @@ const Car = () => {
     setTimeout(() => setShowAlert(false), 5000)
   }
 
-  console.log("store.token:", store.token)
-  console.log("store.car al re-render:", store.car)
-  console.log("store.revisiones al re-render:", store.revisiones)
-
+  
   const today = new Date().toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
@@ -197,34 +208,49 @@ const Car = () => {
                 .sort((a, b) => b.id - a.id)
                 .map((item, index) => (
                   <div key={index} className="revision-item">
-                    <div className="revision-item-left">
-                      <div className="revision-check"
-                        style={{ background: item.estatus === 'Terminado' ? '#f0fdf4' : '#fefce8' }}>
-                        <StatusCheckIcon estatus={item.estatus} />
-                      </div>
-                      <div className="revision-info">
-                        <div className="revision-badges">
-                          <span className={statusBadgeClass(item.estatus)}>{item.estatus}</span>
-                          {index === 0 && <span className="badge-latest">Más reciente</span>}
+                    <div className="revision-item-row">
+                      <div className="revision-item-left">
+                        <div className="revision-check"
+                          style={{ background: item.estatus === 'Terminado' ? '#f0fdf4' : '#fefce8' }}>
+                          <StatusCheckIcon estatus={item.estatus} />
                         </div>
-                        <p className="revision-reason">{item.razon}</p>
-                        <p className="revision-date">{item.fecha} · {item.hora}</p>
+                        <div className="revision-info">
+                          <div className="revision-badges">
+                            <span className={statusBadgeClass(item.estatus)}>{item.estatus}</span>
+                            {index === 0 && <span className="badge-latest">Más reciente</span>}
+                          </div>
+                          <p className="revision-reason">{item.razon}</p>
+                          <p className="revision-date">{item.fecha} · {item.hora}</p>
+                        </div>
+                      </div>
+                      <div className="revision-item-right">
+                        <div className="revision-actions">
+                          <button className="btn btn-secondary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                            onClick={() => navigate("/revision", { state: {item} })}>
+                            <EditIcon /> Editar
+                          </button>
+                          <button className="btn btn-secondary btn-sm"
+                            style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ef4444', borderColor: 'rgba(239,68,68,0.2)' }}
+                            onClick={() => actions.deleteRevision(item.id, store.car.placa)}>
+                            <TrashIcon /> Eliminar
+                          </button>
+                        </div>
+                        <button className="btn btn-secondary btn-sm"
+                          style={{ display: 'flex', alignItems: 'center', padding: '6px 8px' }}
+                          onClick={() => toggleExpanded(item.id)}>
+                          {expandedItems[item.id] ? <ChevronUp /> : <ChevronDown />}
+                        </button>
                       </div>
                     </div>
-                    <div className="revision-item-right">
-                      <div className="revision-actions">
-                        <button className="btn btn-secondary btn-sm"
-                          style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-                          onClick={() => navigate("/revision", { state: {item} })}>
-                          <EditIcon /> Editar
-                        </button>
-                        <button className="btn btn-secondary btn-sm"
-                          style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ef4444', borderColor: 'rgba(239,68,68,0.2)' }}
-                          onClick={() => actions.deleteRevision(item.id, store.car.placa)}>
-                          <TrashIcon /> Eliminar
-                        </button>
+                    {expandedItems[item.id] && (
+                      <div className="revision-expanded">
+                        <p className="revision-expanded-label">Trabajo Realizado</p>
+                        <p className="revision-expanded-text">
+                          {item.trabajo || <span style={{ color: 'rgba(41,41,41,0.3)', fontStyle: 'italic' }}>Sin información registrada.</span>}
+                        </p>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))
             ) : (

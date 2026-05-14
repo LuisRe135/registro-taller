@@ -112,7 +112,15 @@ const Revision = () => {
           <label className="form-label">Motivo de la Visita *</label>
           <input className="form-control" type="text" value={revision.razon}
             onChange={(event) => setRevision({ ...revision, razon: event.target.value })} />
-
+          <label className="form-label">Observaciones *</label>
+          <textarea
+            className="form-control"
+            rows={2}
+            placeholder="Describe cualquier observación relevante..."
+            // value={revision.trabajo}
+            // onChange={(event) => setRevision({ ...revision, trabajo: event.target.value })}
+            style={{ resize: 'vertical' }}
+          />
           <label className="form-label">Trabajo Realizado *</label>
           <textarea
             className="form-control"
