@@ -75,6 +75,7 @@ class Revision(db.Model):
     razon = db.Column(db.String(50), nullable=False)
     estatus = db.Column(db.String(50), nullable=True)
     trabajo = db.Column(db.String(50), nullable=True)
+    kilometraje = db.Column(db.Integer, nullable=True)
 
     # Claves foráneas
     car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
@@ -85,12 +86,13 @@ class Revision(db.Model):
     observaciones = db.relationship('Observation', back_populates='revision', cascade="all, delete-orphan", lazy=True)
     # taller = db.relationship('Taller', back_populates='revisiones') // descomentar cuando se agregue el login
 
-    def __init__(self, fecha, hora, razon, estatus, trabajo, car_id):  # Recordar poner el taller_id
+    def __init__(self, fecha, hora, razon, estatus, trabajo, kilometraje, car_id):  # Recordar poner el taller_id
         self.fecha = fecha
         self.hora = hora
         self.razon = razon
         self.estatus = estatus
         self.trabajo = trabajo
+        self.kilometraje = kilometraje
         self.car_id = car_id
         # self.taller_id = taller_id
 
@@ -102,6 +104,7 @@ class Revision(db.Model):
             "razon": self.razon,
             "estatus": self.estatus,
             "trabajo": self.trabajo,
+            "kilometraje": self.kilometraje,    
             "car": self.car.serialize()
             # "taller": self.taller.serialize()
         }
@@ -115,6 +118,7 @@ class Revision(db.Model):
             "razon": self.razon,
             "estatus": self.estatus,
             "trabajo": self.trabajo,
+            "kilometraje": self.kilometraje,
         }
 
 class Observation(db.Model):

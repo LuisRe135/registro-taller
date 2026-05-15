@@ -167,6 +167,9 @@ const Revision = () => {
                 onChange={(event) => setRevision({ ...revision, trabajo: event.target.value })}
                 style={{ resize: 'vertical' }}
               />
+              <label className="form-label">Kilometraje *</label>
+              <input className="form-control" type="text" value={revision.kilometraje}
+                onChange={(event) => setRevision({ ...revision, kilometraje: event.target.value })} />
             </>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
