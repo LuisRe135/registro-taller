@@ -75,7 +75,6 @@ const Car = () => {
   const {store, actions} = useContext(Context)
 
   const carro = store.car
-  console.log("aqui el carro antes del useEffect:",carro)
   const [razon, setRazon] = useState('')
   const navigate = useNavigate();
   const [revisionesLocales, setRevisionesLocales] = useState([]);
@@ -85,8 +84,6 @@ const Car = () => {
 
   useEffect(() => {
     if (store.car && Object.keys(store.car).length > 0 && store.car.placa) {
-      console.log("✅ Cargando revisiones del carro:", store.car.placa);
-      console.log("revisiones en Car: ", store.revisiones)
     }
   }, [store.car?.placa]);
 
@@ -102,6 +99,7 @@ const Car = () => {
       fecha: formattedDate,
       hora: formattedTime,
       estatus: 'En revision',
+      kilometraje: '',
       trabajo: ''
     }
     await actions.addRevision(infoRevision)
@@ -248,16 +246,20 @@ const Car = () => {
                         {item.trabajo && (
                           <>
                             <p className="revision-expanded-label">Trabajo Realizado</p>
-                            <p id="trabajo" className="revision-expanded-text">{item.trabajo}</p>
+                            <p className="revision-expanded-text">{item.trabajo}</p>
                             <hr style={{ borderColor: 'rgba(41,41,41,0.1)', margin: '10px 0' }} />
                           </>
                         )}
+
                         <p className="revision-expanded-label">Última Observación</p>
                         <p className="revision-expanded-text">
                           {store.observaciones && store.observaciones.length > 0
                             ? store.observaciones.slice().sort((a, b) => b.id - a.id)[0].observacion
                             : <span style={{ color: 'rgba(41,41,41,0.3)', fontStyle: 'italic' }}>Sin observaciones registradas.</span>}
                         </p>
+                        {!!item.kilometraje && (
+                          <p className="revision-expanded-label">Kilometraje: {item.kilometraje}</p>
+                        )}
                       </div>
                     )}
                   </div>

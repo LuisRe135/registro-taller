@@ -84,7 +84,9 @@ def add_revision():
         razon = request.json.get('razon')
         estatus = request.json.get('estatus')
         trabajo = request.json.get('trabajo')
+        kilometraje = request.json.get('kilometraje')
         placa = request.json.get('placa')
+
 
         if not razon:
             return jsonify({'error': 'La razon es obligatoria.'}), 400
@@ -92,8 +94,9 @@ def add_revision():
             return jsonify({'error': 'La placa del carro es obligatoria.'}), 400
         
         car = Car.query.filter_by(placa=placa).first()
-        
-        new_revision = Revision(car_id=car.id, fecha=fecha, hora=hora, razon = razon, estatus=estatus, trabajo=trabajo)
+        if not car:
+            return jsonify({'error': 'Carro no encontrado.'}), 404
+        new_revision = Revision(car_id=car.id, fecha=fecha, hora=hora, razon = razon, estatus=estatus, trabajo=trabajo, kilometraje=kilometraje)
 
         db.session.add(new_revision)
         db.session.commit()
@@ -187,6 +190,7 @@ def edit_revision(rev_id):
 
     revision.estatus = body.get('estatus', revision.estatus)
     revision.trabajo = body.get('trabajo', revision.trabajo)
+    revision.kilometraje = body.get('kilometraje', revision.kilometraje)
     db.session.commit()
 
     return jsonify({'message': 'Revision updated', 'revision': {'id': revision.id, 'estatus': revision.estatus}}), 200
