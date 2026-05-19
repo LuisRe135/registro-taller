@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			revisiones: [],
 			car: {},
 			taller: null,
+			user: null,
 			observaciones: [],
 			token: localStorage.getItem("token") || null
 		},
@@ -41,7 +42,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				
 			},
 			addRevision: async(rev) =>{
-				const token = getStore().token
+				const token = localStorage.getItem("token")
 
 				await fetch("http://127.0.0.1:5000/public/revision", {
 					method: "POST",
@@ -71,7 +72,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			findCar: async(plate) => {  //recordar poner el async
 				
-				const token = getStore().token
+				const token = localStorage.getItem("token")
 				const response = await fetch("http://127.0.0.1:5000/public/car/"+plate, {
 					method: "GET",
 					headers: {
@@ -113,10 +114,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 			// 		PUT
 
 			editRevision: async (rev, placa)=>{
+				const token = localStorage.getItem("token")
 				const response = await fetch(`http://127.0.0.1:5000/public/revision/${rev.id}`, {
 				method: "PUT",
 				headers: {
-					"Content-Type": "application/json"
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + token
 				},
 				body: JSON.stringify(rev)
 				})
@@ -143,13 +146,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (response.ok) setStore({ observaciones: data })
 			},
 			addObservation: async (obs) => {
+				const token = localStorage.getItem("token")
 				const response = await fetch("http://127.0.0.1:5000/public/observation", {
 					method: "POST",
-					headers: { "Content-Type": "application/json" },
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
 					body: JSON.stringify(obs)
 				})
 				const data = await response.json()
 				return response.ok ? { success: true, data } : { success: false, error: data.error }
+			},
+			createEmployee: async ({ name, email, password }) => {
+				const token = localStorage.getItem("token")
+				const response = await fetch("http://127.0.0.1:5000/admin/users", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+					body: JSON.stringify({ name, email, password })
+				})
+				const data = await response.json()
+				return response.ok ? { success: true, user: data.user } : { success: false, error: data.error }
 			},
 			resetStore: () => setStore({car: {}, revisiones: []}),
 			deleteRevision: async(rev, placa)=>{
@@ -183,7 +203,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						localStorage.setItem("token", data.access_token);
 						const payload = JSON.parse(atob(data.access_token.split('.')[1]))
 						console.log("Token expira:", new Date(payload.exp * 1000))
-						setStore({ taller: data.taller, token: data.access_token });
+						setStore({ taller: data.taller, user: data.user, token: data.access_token });
 						return { success: true };
 					} else {
 						return { success: false, error: data.error };

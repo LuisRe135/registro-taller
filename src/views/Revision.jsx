@@ -97,7 +97,7 @@ const Revision = () => {
       }
       await actions.addObservation(infoObservacion)
       setObservacion('')
-      actions.getObservations(revision.id)
+      await actions.getObservations(revision.id)
     }
   return (
     <div className="revision-edit-page">
@@ -150,7 +150,7 @@ const Revision = () => {
               {store.observaciones.slice().sort((a, b) => b.id - a.id).map((obs) => (
                 <div key={obs.id} className="revision-item" style={{ marginBottom: 8 }}>
                   <p className="revision-reason">{obs.observacion}</p>
-                  <p className="revision-date">{obs.fecha} · {obs.hora}</p>
+                  <p className="revision-date">{obs.fecha} · {obs.hora}{obs.created_by ? ` · ${obs.created_by}` : ""}</p>
                 </div>
               ))}
             </div>

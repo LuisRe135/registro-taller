@@ -14,8 +14,8 @@ const Register = () => {
   const {store, actions} = useContext(Context)
   const location = useLocation();
   const navigate = useNavigate();
-  const [taller, setTaller] = useState({
-    name: "", email: "", password: "", phone: "", address: ""
+  const [form, setForm] = useState({
+    taller_name: "", admin_name: "", email: "", password: "", phone: "", address: ""
   })
   const [errorMsg, setErrorMsg] = useState(null)
 
@@ -27,9 +27,9 @@ const Register = () => {
 
   const handleRegister = async () => {
     setErrorMsg(null)
-    const result = await actions.register(taller)
+    const result = await actions.register(form)
     if (result.success) {
-      const loginResult = await actions.login(taller.email, taller.password)
+      const loginResult = await actions.login(form.email, form.password)
       if (loginResult.success) navigate("/home")
       else navigate("/login")
     } else {
@@ -49,32 +49,37 @@ const Register = () => {
 
         <label className="form-label">Nombre del Taller</label>
         <input className="form-control" type="text" placeholder="Taller Mecánico..."
-          value={taller.name}
-          onChange={(event) => setTaller({ ...taller, name: event.target.value })} />
+          value={form.taller_name}
+          onChange={(e) => setForm({ ...form, taller_name: e.target.value })} />
+
+        <label className="form-label">Tu nombre</label>
+        <input className="form-control" type="text" placeholder="Juan Pérez"
+          value={form.admin_name}
+          onChange={(e) => setForm({ ...form, admin_name: e.target.value })} />
 
         <label className="form-label">Email</label>
         <input className="form-control" type="email" placeholder="email@taller.com"
-          value={taller.email}
-          onChange={(event) => setTaller({ ...taller, email: event.target.value })} />
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })} />
 
         <label className="form-label">Contraseña</label>
         <input className="form-control" type="password" placeholder="••••••••"
-          value={taller.password}
-          onChange={(event) => setTaller({ ...taller, password: event.target.value })} />
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })} />
 
         <label className="form-label">
           Teléfono <span style={{ color: 'rgba(41,41,41,0.3)', fontWeight: 400 }}>· opcional</span>
         </label>
         <input className="form-control" type="text" placeholder="+58 000 000 0000"
-          value={taller.phone}
-          onChange={(event) => setTaller({ ...taller, phone: event.target.value })} />
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })} />
 
         <label className="form-label">
           Dirección <span style={{ color: 'rgba(41,41,41,0.3)', fontWeight: 400 }}>· opcional</span>
         </label>
         <input className="form-control" type="text" placeholder="Av. Principal..."
-          value={taller.address}
-          onChange={(event) => setTaller({ ...taller, address: event.target.value })} />
+          value={form.address}
+          onChange={(e) => setForm({ ...form, address: e.target.value })} />
 
         {errorMsg && (
           <div className="alert alert-danger" role="alert">

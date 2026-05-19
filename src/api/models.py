@@ -6,17 +6,15 @@ class Taller(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
-    email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
     address = db.Column(db.String(200), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-    def __init__(self, name, email, password, phone=None, address=None):
+    users = db.relationship('User', back_populates='taller', lazy=True)
+
+    def __init__(self, name, phone=None, address=None):
         self.name = name
-        self.email = email
-        self.password = password
         self.phone = phone
         self.address = address
 
@@ -24,12 +22,45 @@ class Taller(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "email": self.email,
             "phone": self.phone,
             "address": self.address,
             "is_active": self.is_active,
             "created_at": self.created_at.isoformat()
         }
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='employee')  # 'admin' or 'employee'
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    taller_id = db.Column(db.Integer, db.ForeignKey('talleres.id'), nullable=False)
+    taller = db.relationship('Taller', back_populates='users')
+
+    def __init__(self, name, email, password, taller_id, role='employee'):
+        self.name = name
+        self.email = email
+        self.password = password
+        self.taller_id = taller_id
+        self.role = role
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role,
+            "taller_id": self.taller_id,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat()
+        }
+
 
 class Car(db.Model):
     __tablename__ = 'cars'
@@ -42,7 +73,6 @@ class Car(db.Model):
     owner = db.Column(db.String(50), nullable=True)
     color = db.Column(db.String(50), nullable=True)
 
-    # Relaciones
     revisiones = db.relationship('Revision', back_populates='car', cascade="all, delete-orphan", lazy=True)
 
     def __init__(self, placa, marca, modelo, year, owner, color):
@@ -77,16 +107,14 @@ class Revision(db.Model):
     trabajo = db.Column(db.String(50), nullable=True)
     kilometraje = db.Column(db.Integer, nullable=True)
 
-    # Claves foráneas
     car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
-    # taller_id = db.Column(db.Integer, db.ForeignKey('talleres.id'), nullable=False) // descomentar cuando se agregue login
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
-    # Relaciones
     car = db.relationship('Car', back_populates='revisiones')
+    user = db.relationship('User', foreign_keys=[user_id])
     observaciones = db.relationship('Observation', back_populates='revision', cascade="all, delete-orphan", lazy=True)
-    # taller = db.relationship('Taller', back_populates='revisiones') // descomentar cuando se agregue el login
 
-    def __init__(self, fecha, hora, razon, estatus, trabajo, kilometraje, car_id):  # Recordar poner el taller_id
+    def __init__(self, fecha, hora, razon, estatus, trabajo, kilometraje, car_id, user_id=None):
         self.fecha = fecha
         self.hora = hora
         self.razon = razon
@@ -94,7 +122,7 @@ class Revision(db.Model):
         self.trabajo = trabajo
         self.kilometraje = kilometraje
         self.car_id = car_id
-        # self.taller_id = taller_id
+        self.user_id = user_id
 
     def serialize(self):
         return {
@@ -104,13 +132,12 @@ class Revision(db.Model):
             "razon": self.razon,
             "estatus": self.estatus,
             "trabajo": self.trabajo,
-            "kilometraje": self.kilometraje,    
-            "car": self.car.serialize()
-            # "taller": self.taller.serialize()
+            "kilometraje": self.kilometraje,
+            "car": self.car.serialize(),
+            "created_by": self.user.serialize() if self.user else None
         }
 
     def serialize_basic(self):
-        # """Versión simplificada para listas."""
         return {
             "id": self.id,
             "fecha": self.fecha,
@@ -119,7 +146,9 @@ class Revision(db.Model):
             "estatus": self.estatus,
             "trabajo": self.trabajo,
             "kilometraje": self.kilometraje,
+            "created_by": self.user.name if self.user else None
         }
+
 
 class Observation(db.Model):
     __tablename__ = 'observaciones'
@@ -129,20 +158,18 @@ class Observation(db.Model):
     hora = db.Column(db.String(50), nullable=False)
     observacion = db.Column(db.String(50), nullable=True)
 
-    # Claves foráneas
     revision_id = db.Column(db.Integer, db.ForeignKey('revisiones.id'), nullable=False)
-    # taller_id = db.Column(db.Integer, db.ForeignKey('talleres.id'), nullable=False) // descomentar cuando se agregue login
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
-    # Relaciones
     revision = db.relationship('Revision', back_populates='observaciones')
-    # taller = db.relationship('Taller', back_populates='revisiones') // descomentar cuando se agregue el login
+    user = db.relationship('User', foreign_keys=[user_id])
 
-    def __init__(self, fecha, hora, observacion, revision_id):  # Recordar poner el taller_id
+    def __init__(self, fecha, hora, observacion, revision_id, user_id=None):
         self.fecha = fecha
         self.hora = hora
         self.observacion = observacion
         self.revision_id = revision_id
-        # self.taller_id = taller_id
+        self.user_id = user_id
 
     def serialize(self):
         return {
@@ -150,15 +177,15 @@ class Observation(db.Model):
             "fecha": self.fecha,
             "hora": self.hora,
             "observacion": self.observacion,
-            "revision": self.revision.serialize()
-            # "taller": self.taller.serialize()
+            "revision": self.revision.serialize(),
+            "created_by": self.user.serialize() if self.user else None
         }
 
     def serialize_basic(self):
-        # """Versión simplificada para listas."""
         return {
             "id": self.id,
             "fecha": self.fecha,
             "hora": self.hora,
             "observacion": self.observacion,
+            "created_by": self.user.name if self.user else None
         }
