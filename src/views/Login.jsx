@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import { Context } from '../js/store/appContext.js'
 import { useNavigate } from "react-router-dom";
 
@@ -14,10 +14,19 @@ const Login = () => {
   const navigate = useNavigate();
   const {actions} = useContext(Context)
   const [taller, setTaller] = useState({ email: "", password: "" })
+  const [errorMsg, setErrorMsg] = useState(null)
+
+  useEffect(() => {
+    if (!errorMsg) return
+    const timer = setTimeout(() => setErrorMsg(null), 5000)
+    return () => clearTimeout(timer)
+  }, [errorMsg])
 
   const handleLogin = async () => {
+    setErrorMsg(null)
     const result = await actions.login(taller.email, taller.password)
     if (result.success) navigate("/home")
+    else setErrorMsg("Credenciales incorrectas. ¿No tienes cuenta?")
   }
 
   return (
@@ -39,6 +48,15 @@ const Login = () => {
         <input className="form-control" type="password" placeholder="••••••••"
           value={taller.password}
           onChange={(event) => setTaller({ ...taller, password: event.target.value })} />
+
+        {errorMsg && (
+          <div className="alert alert-danger" role="alert">
+            {errorMsg}{' '}
+            <div className="alert-link btn btn-link p-0">
+              Regístrate abajo
+            </div>
+          </div>
+        )}
 
         <div className="auth-actions">
           <button className="btn btn-primary w-100" onClick={() => handleLogin()}>

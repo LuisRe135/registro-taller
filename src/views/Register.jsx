@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import { Context } from '../js/store/appContext.js'
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -17,13 +17,23 @@ const Register = () => {
   const [taller, setTaller] = useState({
     name: "", email: "", password: "", phone: "", address: ""
   })
+  const [errorMsg, setErrorMsg] = useState(null)
+
+  useEffect(() => {
+    if (!errorMsg) return
+    const timer = setTimeout(() => setErrorMsg(null), 5000)
+    return () => clearTimeout(timer)
+  }, [errorMsg])
 
   const handleRegister = async () => {
+    setErrorMsg(null)
     const result = await actions.register(taller)
     if (result.success) {
       const loginResult = await actions.login(taller.email, taller.password)
       if (loginResult.success) navigate("/home")
       else navigate("/login")
+    } else {
+      setErrorMsg(result.error || "Error al registrar. Intenta de nuevo.")
     }
   }
 
@@ -65,6 +75,12 @@ const Register = () => {
         <input className="form-control" type="text" placeholder="Av. Principal..."
           value={taller.address}
           onChange={(event) => setTaller({ ...taller, address: event.target.value })} />
+
+        {errorMsg && (
+          <div className="alert alert-danger" role="alert">
+            {errorMsg}
+          </div>
+        )}
 
         <div className="auth-actions">
           <button className="btn btn-primary w-100" onClick={() => handleRegister()}>
