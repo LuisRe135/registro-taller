@@ -44,15 +44,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 			addRevision: async(rev) =>{
 				const token = localStorage.getItem("token")
 
-				await fetch("http://127.0.0.1:5000/public/revision", {
+				const post = await fetch("http://127.0.0.1:5000/public/revision", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 						"Authorization": "Bearer " + token
-					
+
   					},
 					body: JSON.stringify(rev)
 				})
+				const created = await post.json()
 
 				const response = await fetch("http://127.0.0.1:5000/public/revisions/" + rev.placa, {
 					method: "GET",
@@ -64,8 +65,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const revisiones = await response.json()
 				setStore({ revisiones: revisiones })
 
-				return true
-				
+				return created
+
 			},
 
 			// 		GET

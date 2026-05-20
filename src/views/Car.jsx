@@ -76,11 +76,34 @@ const Car = () => {
 
   const carro = store.car
   const [razon, setRazon] = useState('')
+  const [observacionInicial, setObservacionInicial] = useState('')
+  const [tipoObservacion, setTipoObservacion] = useState('general')
   const navigate = useNavigate();
   const [revisionesLocales, setRevisionesLocales] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [expandedItems, setExpandedItems] = useState({});
-  const toggleExpanded = (id) => setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  const [newObsText, setNewObsText] = useState({});
+  const [newObsType, setNewObsType] = useState({});
+  const [obsByRev, setObsByRev] = useState({});
+
+  const loadObservations = async (revId) => {
+    const response = await fetch(`http://127.0.0.1:5000/public/observations/${revId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      setObsByRev(prev => ({ ...prev, [revId]: data }))
+    }
+  }
+
+  const toggleExpanded = (id) => {
+    const willOpen = !expandedItems[id]
+    setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
+    if (willOpen && !obsByRev[id]) loadObservations(id)
+  }
+
+  const formatObservacion = (text, tipo) => (tipo === 'repuestos' ? `Repuestos: ${text}` : text);
 
   useEffect(() => {
     if (store.car && Object.keys(store.car).length > 0 && store.car.placa) {
@@ -102,10 +125,43 @@ const Car = () => {
       kilometraje: '',
       trabajo: ''
     }
-    await actions.addRevision(infoRevision)
+    const created = await actions.addRevision(infoRevision)
+
+    if (observacionInicial.trim() && created?.id) {
+      await actions.addObservation({
+        fecha: formattedDate,
+        hora: formattedTime,
+        observacion: formatObservacion(observacionInicial.trim(), tipoObservacion),
+        revision_id: created.id
+      })
+      await loadObservations(created.id)
+    }
+
     setRazon("")
+    setObservacionInicial("")
+    setTipoObservacion('general')
     setShowAlert(true)
     setTimeout(() => setShowAlert(false), 5000)
+  }
+
+  const agregarObservacionEnHistorial = async (revisionId) => {
+    const text = (newObsText[revisionId] || '').trim()
+    if (!text) return
+    const tipo = newObsType[revisionId] || 'general'
+    const fecha = new Date();
+    const formattedDate = fecha.getDate().toString().padStart(2, '0') + '/' +
+                        (fecha.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                        fecha.getFullYear();
+    const formattedTime = fecha.toLocaleTimeString('en-GB');
+    await actions.addObservation({
+      fecha: formattedDate,
+      hora: formattedTime,
+      observacion: formatObservacion(text, tipo),
+      revision_id: revisionId
+    })
+    setNewObsText(prev => ({ ...prev, [revisionId]: '' }))
+    setNewObsType(prev => ({ ...prev, [revisionId]: 'general' }))
+    await loadObservations(revisionId)
   }
 
   
@@ -152,27 +208,56 @@ const Car = () => {
           <div className="nv-header">
             <div className="nv-icon-box"><WrenchIcon /></div>
             <div>
-              <p className="nv-title">Nueva Visita</p>
-              <p className="nv-subtitle">Registrar un nuevo servicio para este vehículo</p>
+              <p className="nv-title">Ingresar vehículo</p>
+              <p className="nv-subtitle">Registrar un nuevo ingreso al taller</p>
             </div>
           </div>
-          <label className="nv-title">Motivo de ingreso al taller *</label>
-          <textarea
+          <label className="nv-title">Motivo de ingreso *</label>
+          <input
+            type="text"
             className="form-control"
-            placeholder="Describe por qué el vehículo está en el taller hoy (ej. cambio de aceite programado, ruido en frenos, luz de motor encendida...)"
+            placeholder="ej. ruido en frenos, luz de motor, cambio de aceite..."
             value={razon}
-            rows={3}
             onChange={(event) => setRazon(event.target.value)}
-            style={{ resize: 'none' }}
           />
-          <div className="nv-footer">
-            <span className="nv-date">Hoy · {today}</span>
-            <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-              onClick={() => agregarRevision()}
-              disabled={!razon.trim()}>
-              <SendIcon /> Iniciar Revisión
-            </button>
-          </div>
+
+          {razon.trim().length > 0 && (
+            <>
+              <label className="nv-title" style={{ marginTop: 12 }}>Primera observación (opcional)</label>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${tipoObservacion === 'general' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setTipoObservacion('general')}>
+                  General
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${tipoObservacion === 'repuestos' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setTipoObservacion('repuestos')}>
+                  Repuestos
+                </button>
+              </div>
+              <textarea
+                className="form-control"
+                placeholder={tipoObservacion === 'repuestos'
+                  ? "Lista de repuestos o materiales necesarios..."
+                  : "Notas iniciales del mecánico al recibir el carro..."}
+                value={observacionInicial}
+                rows={3}
+                onChange={(event) => setObservacionInicial(event.target.value)}
+                style={{ resize: 'none' }}
+              />
+              <div className="nv-footer">
+                <span className="nv-date">Hoy · {today}</span>
+                <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                  onClick={() => agregarRevision()}
+                  disabled={!razon.trim()}>
+                  <SendIcon /> Registrar visita
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {showAlert && (
@@ -180,7 +265,7 @@ const Car = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            <span>Revisión agregada</span>
+            <span>Carro ingresado</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
             </svg>
@@ -226,7 +311,7 @@ const Car = () => {
                           <button className="btn btn-secondary btn-sm"
                             style={{ display: 'flex', alignItems: 'center', gap: 4 }}
                             onClick={() => navigate("/revision", { state: {item} })}>
-                            <EditIcon /> Editar
+                            <EditIcon /> Abrir visita
                           </button>
                           <button className="btn btn-secondary btn-sm"
                             style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ef4444', borderColor: 'rgba(239,68,68,0.2)' }}
@@ -253,12 +338,50 @@ const Car = () => {
 
                         <p className="revision-expanded-label">Última Observación</p>
                         <p className="revision-expanded-text">
-                          {store.observaciones && store.observaciones.length > 0
-                            ? store.observaciones.slice().sort((a, b) => b.id - a.id)[0].observacion
+                          {(obsByRev[item.id] && obsByRev[item.id].length > 0)
+                            ? obsByRev[item.id].slice().sort((a, b) => b.id - a.id)[0].observacion
                             : <span style={{ color: 'rgba(41,41,41,0.3)', fontStyle: 'italic' }}>Sin observaciones registradas.</span>}
                         </p>
                         {!!item.kilometraje && (
                           <p className="revision-expanded-label">Kilometraje: {item.kilometraje}</p>
+                        )}
+
+                        {item.estatus !== 'Terminado' && (
+                          <>
+                            <hr style={{ borderColor: 'rgba(41,41,41,0.1)', margin: '10px 0' }} />
+                            <p className="revision-expanded-label">Agregar observación</p>
+                            <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+                              <button
+                                type="button"
+                                className={`btn btn-sm ${(newObsType[item.id] || 'general') === 'general' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setNewObsType(prev => ({ ...prev, [item.id]: 'general' }))}>
+                                General
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn btn-sm ${newObsType[item.id] === 'repuestos' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setNewObsType(prev => ({ ...prev, [item.id]: 'repuestos' }))}>
+                                Repuestos
+                              </button>
+                            </div>
+                            <textarea
+                              className="form-control"
+                              rows={2}
+                              placeholder={(newObsType[item.id] || 'general') === 'repuestos'
+                                ? "Lista de repuestos o materiales..."
+                                : "Agregar una nota a esta visita..."}
+                              value={newObsText[item.id] || ''}
+                              onChange={(event) => setNewObsText(prev => ({ ...prev, [item.id]: event.target.value }))}
+                              style={{ resize: 'vertical' }}
+                            />
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              style={{ marginTop: 6, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                              onClick={() => agregarObservacionEnHistorial(item.id)}
+                              disabled={!(newObsText[item.id] || '').trim()}>
+                              <PlusIcon /> Agregar
+                            </button>
+                          </>
                         )}
                       </div>
                     )}

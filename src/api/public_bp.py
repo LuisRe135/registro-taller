@@ -90,7 +90,7 @@ def add_revision():
                                 estatus=estatus, trabajo=trabajo, kilometraje=kilometraje)
         db.session.add(new_revision)
         db.session.commit()
-        return jsonify({'message': 'revision added'}), 200
+        return jsonify(new_revision.serialize_basic()), 201
 
     except Exception as e:
         return jsonify({'error': 'Error in revision creation: ' + str(e)}), 500
