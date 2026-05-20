@@ -208,7 +208,7 @@ const Car = () => {
           <div className="nv-header">
             <div className="nv-icon-box"><WrenchIcon /></div>
             <div>
-              <p className="nv-title">Ingresar vehículo</p>
+              <p className="nv-title">Ingresar vehículo al taller</p>
               <p className="nv-subtitle">Registrar un nuevo ingreso al taller</p>
             </div>
           </div>
@@ -349,7 +349,7 @@ const Car = () => {
                         {item.estatus !== 'Terminado' && (
                           <>
                             <hr style={{ borderColor: 'rgba(41,41,41,0.1)', margin: '10px 0' }} />
-                            <p className="revision-expanded-label">Agregar observación</p>
+                            <p className="revision-expanded-label">Agregar nota</p>
                             <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
                               <button
                                 type="button"

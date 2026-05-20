@@ -74,6 +74,9 @@ const Revision = () => {
   const vehiculos = store.vehiculos
   let carro = (vehiculos.find(vehiculo => vehiculo.placa == revision.placa))
   const [observacion, setObservacion] = useState('')
+  const [tipoObservacion, setTipoObservacion] = useState('general')
+
+  const formatObservacion = (text, tipo) => (tipo === 'repuestos' ? `Repuestos: ${text}` : text);
 
   useEffect(() => {
     actions.getObservations(revision.id)
@@ -92,11 +95,12 @@ const Revision = () => {
       const infoObservacion = {
         fecha: formattedDate,
         hora: formattedTime,
-        observacion: observacion,
+        observacion: formatObservacion(observacion.trim(), tipoObservacion),
         revision_id: revision.id
       }
       await actions.addObservation(infoObservacion)
       setObservacion('')
+      setTipoObservacion('general')
       await actions.getObservations(revision.id)
     }
   return (
@@ -114,7 +118,7 @@ const Revision = () => {
         </div>
 
         <div className="revision-edit-header">
-          <h1>Editar Revisión</h1>
+          <h1>Detalle de la visita</h1>
           <p className="revision-edit-meta">
             {store.car.marca} {store.car.modelo}
             {store.car.placa && <> · <span className="plate-text">{store.car.placa}</span></>}
@@ -132,17 +136,33 @@ const Revision = () => {
           <label className="form-label">Motivo de la Visita *</label>
           <input className="form-control" type="text" value={revision.razon}
             onChange={(event) => setRevision({ ...revision, razon: event.target.value })} />
-          <label className="form-label">Observaciones *</label>
+          <label className="form-label">Notas y Requerimientos *</label>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+            <button
+              type="button"
+              className={`btn btn-sm ${tipoObservacion === 'general' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setTipoObservacion('general')}>
+              General
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${tipoObservacion === 'repuestos' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setTipoObservacion('repuestos')}>
+              Repuestos
+            </button>
+          </div>
           <textarea
             className="form-control"
             rows={2}
-            placeholder="Describe cualquier observación relevante..."
+            placeholder={tipoObservacion === 'repuestos'
+              ? "Lista de repuestos o materiales..."
+              : "Describe cualquier observación relevante..."}
             value={observacion}
             onChange={(event) => setObservacion(event.target.value)}
             style={{ resize: 'vertical' }}
           />
           <button className="btn btn-secondary btn-sm" style={{ marginTop: 6 }} onClick={agregarObservacion} disabled={!observacion.trim()}>
-            Agregar observación
+            Agregar nota
           </button>
 
           {store.observaciones && store.observaciones.length > 0 && (
